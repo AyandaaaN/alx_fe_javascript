@@ -37,7 +37,8 @@ let quotes = JSON.parse(localStorage.getItem("quotes")) || [
   
     quotes.push(newQuote);
     saveQuotes();
-  
+    populateCategories();
+
     document.getElementById("newQuoteText").value = "";
     document.getElementById("newQuoteCategory").value = "";
   
@@ -88,7 +89,7 @@ let quotes = JSON.parse(localStorage.getItem("quotes")) || [
   
     URL.revokeObjectURL(url);
   }
-  
+
   function importFromJsonFile(event) {
     const fileReader = new FileReader();
     fileReader.onload = function (event) {
@@ -107,5 +108,51 @@ let quotes = JSON.parse(localStorage.getItem("quotes")) || [
     };
     fileReader.readAsText(event.target.files[0]);
   }
+
+  function populateCategories() {
+  const filterSelect = document.getElementById("categoryFilter");
+  const uniqueCategories = [...new Set(quotes.map(q => q.category))];
+
+  filterSelect.innerHTML = '<option value="all">All Categories</option>';
+
+  uniqueCategories.forEach(category => {
+    const option = document.createElement("option");
+    option.value = category;
+    option.textContent = category;
+    filterSelect.appendChild(option);
+  });
+
+  const savedFilter = localStorage.getItem("selectedCategory");
+  if (savedFilter) {
+    filterSelect.value = savedFilter;
+    filterQuotes();
+  }
+}
+
+function filterQuotes() {
+    const selectedCategory = document.getElementById("categoryFilter").value;
+    localStorage.setItem("selectedCategory", selectedCategory); // Remember the selection
   
+    let filtered = quotes;
+  
+    if (selectedCategory !== "all") {
+      filtered = quotes.filter(q => q.category === selectedCategory);
+    }
+  
+    const quoteDisplay = document.getElementById("quoteDisplay");
+    quoteDisplay.innerHTML = ""; // Clear display
+  
+    if (filtered.length === 0) {
+      quoteDisplay.innerHTML = "<p>No quotes found for this category.</p>";
+      return;
+    }
+  
+    filtered.forEach(q => {
+      const p = document.createElement("p");
+      p.innerHTML = `<strong>Quote:</strong> ${q.text}<br><strong>Category:</strong> ${q.category}`;
+      quoteDisplay.appendChild(p);
+    });
+  }
+  populateCategories();
+
   
