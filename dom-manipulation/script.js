@@ -1,8 +1,12 @@
-let quotes = [
+let quotes = JSON.parse(localStorage.getItem("quotes")) || [
     { text: "Be yourself; everyone else is already taken.", category: "Inspiration" },
     { text: "The only limit to our realization of tomorrow is our doubts of today.", category: "Motivation" },
     { text: "Life is what happens when you're busy making other plans.", category: "Life" }
   ];
+  
+  function saveQuotes() {
+    localStorage.setItem("quotes", JSON.stringify(quotes));
+  }  
   
   function showRandomQuote() {
     const randomIndex = Math.floor(Math.random() * quotes.length);
@@ -14,6 +18,7 @@ let quotes = [
       <p><strong>Quote:</strong> ${quote.text}</p>
       <p><strong>Category:</strong> ${quote.category}</p>
     `;
+    sessionStorage.setItem("lastQuote", JSON.stringify(quote));
   }
   
   function addQuote() {
@@ -31,6 +36,7 @@ let quotes = [
     };
   
     quotes.push(newQuote);
+    saveQuotes();
   
     document.getElementById("newQuoteText").value = "";
     document.getElementById("newQuoteCategory").value = "";
@@ -70,4 +76,36 @@ let quotes = [
   document.getElementById("newQuote").addEventListener("click", showRandomQuote);
   
   createAddQuoteForm();
+
+  function exportQuotes() {
+    const blob = new Blob([JSON.stringify(quotes, null, 2)], { type: "application/json" });
+    const url = URL.createObjectURL(blob);
+  
+    const a = document.createElement("a");
+    a.href = url;
+    a.download = "quotes.json";
+    a.click();
+  
+    URL.revokeObjectURL(url);
+  }
+  
+  function importFromJsonFile(event) {
+    const fileReader = new FileReader();
+    fileReader.onload = function (event) {
+      try {
+        const importedQuotes = JSON.parse(event.target.result);
+        if (Array.isArray(importedQuotes)) {
+          quotes.push(...importedQuotes);
+          saveQuotes();
+          alert("Quotes imported successfully!");
+        } else {
+          alert("Invalid JSON format.");
+        }
+      } catch (e) {
+        alert("Failed to import: " + e.message);
+      }
+    };
+    fileReader.readAsText(event.target.files[0]);
+  }
+  
   
