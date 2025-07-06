@@ -187,7 +187,7 @@ function filterQuotes() {
       saveQuotes();
       populateCategories();
       filterQuotes();
-      notifyUser("New quotes synced from server. Server data prioritized.");
+      notifyUser("Quotes synced with server!");
     }
   }  
 
