@@ -199,7 +199,9 @@ function filterQuotes() {
       notification.textContent = "";
     }, 5000);
   }  
-
+  async function fetchQuotesFromServer() {
+    await syncQuotes();
+  }  
 // Fetch every 10 seconds (for demo)
 setInterval(syncQuotes, 10000);
 
