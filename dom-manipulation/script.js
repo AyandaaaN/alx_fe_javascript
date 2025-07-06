@@ -156,22 +156,21 @@ function filterQuotes() {
   }
   populateCategories();
 
-  async function fetchQuotesFromServer() {
-  try {
-    const response = await fetch("https://jsonplaceholder.typicode.com/posts?_limit=3");
-    const serverData = await response.json();
-
-    // Simulate server quotes using post titles
-    const serverQuotes = serverData.map(post => ({
-      text: post.title,
-      category: "Server"
-    }));
-
-    handleQuoteConflicts(serverQuotes);
-  } catch (error) {
-    console.error("Failed to fetch server quotes:", error);
-  }
-}
+  async function syncQuotes() {
+    try {
+      const response = await fetch("https://jsonplaceholder.typicode.com/posts?_limit=3");
+      const serverData = await response.json();
+  
+      const serverQuotes = serverData.map(post => ({
+        text: post.title,
+        category: "Server"
+      }));
+  
+      handleQuoteConflicts(serverQuotes);
+    } catch (error) {
+      console.error("Failed to sync with server:", error);
+    }
+  }  
 
   function handleQuoteConflicts(serverQuotes) {
     let hasConflict = false;
@@ -190,17 +189,19 @@ function filterQuotes() {
       filterQuotes();
       notifyUser("New quotes synced from server. Server data prioritized.");
     }
-  }
-  function notifyUser(message) {
-  const notification = document.getElementById("notification");
-  notification.textContent = message;
+  }  
 
-  setTimeout(() => {
-    notification.textContent = "";
-  }, 5000);
-}
+  function notifyUser(message) {
+    const notification = document.getElementById("notification");
+    notification.textContent = message;
+  
+    setTimeout(() => {
+      notification.textContent = "";
+    }, 5000);
+  }  
+
 // Fetch every 10 seconds (for demo)
-setInterval(fetchQuotesFromServer, 10000);
+setInterval(syncQuotes, 10000);
 
 async function postQuoteToServer(quote) {
   try {
