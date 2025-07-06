@@ -37,6 +37,7 @@ let quotes = JSON.parse(localStorage.getItem("quotes")) || [
   
     quotes.push(newQuote);
     saveQuotes();
+    postQuoteToServer(newQuote);
     populateCategories();
 
     document.getElementById("newQuoteText").value = "";
@@ -200,6 +201,23 @@ function filterQuotes() {
 }
 // Fetch every 10 seconds (for demo)
 setInterval(fetchQuotesFromServer, 10000);
+
+async function postQuoteToServer(quote) {
+  try {
+    const response = await fetch("https://jsonplaceholder.typicode.com/posts", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json"
+      },
+      body: JSON.stringify(quote)
+    });
+
+    const result = await response.json();
+    console.log("Simulated POST successful:", result);
+  } catch (error) {
+    console.error("Simulated POST failed:", error);
+  }
+}
 
 
   
