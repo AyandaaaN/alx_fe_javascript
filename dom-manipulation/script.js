@@ -154,22 +154,23 @@ function filterQuotes() {
     });
   }
   populateCategories();
-  function fetchQuotesFromServer() {
-    fetch("https://jsonplaceholder.typicode.com/posts?_limit=3")
-      .then(response => response.json())
-      .then(serverData => {
-      
-        const serverQuotes = serverData.map(post => ({
-          text: post.title,
-          category: "Server"
-        }));
-  
-        handleQuoteConflicts(serverQuotes);
-      })
-      .catch(error => {
-        console.error("Failed to fetch server quotes:", error);
-      });
+
+  async function fetchQuotesFromServer() {
+  try {
+    const response = await fetch("https://jsonplaceholder.typicode.com/posts?_limit=3");
+    const serverData = await response.json();
+
+    // Simulate server quotes using post titles
+    const serverQuotes = serverData.map(post => ({
+      text: post.title,
+      category: "Server"
+    }));
+
+    handleQuoteConflicts(serverQuotes);
+  } catch (error) {
+    console.error("Failed to fetch server quotes:", error);
   }
+}
 
   function handleQuoteConflicts(serverQuotes) {
     let hasConflict = false;
