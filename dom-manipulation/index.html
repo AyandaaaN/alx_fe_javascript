@@ -7,7 +7,7 @@
 </head>
 <body>
   <h1>Dynamic Quote Generator</h1>
-
+  <div id="notification" style="color: green; margin-top: 10px;"></div>
   <div id="quoteDisplay"></div>
   <label for="categoryFilter"><strong>Filter by Category:</strong></label>
 <select id="categoryFilter" onchange="filterQuotes()">
@@ -23,7 +23,7 @@
     <button onclick="addQuote()">Add Quote</button>
     <button onclick="exportQuotes()">Export Quotes as JSON</button>
   </div>
-
+  <button onclick="fetchQuotesFromServer()">Sync Now</button>
   <script src="script.js"></script>
 </body>
 </html>

@@ -131,7 +131,7 @@ let quotes = JSON.parse(localStorage.getItem("quotes")) || [
 
 function filterQuotes() {
     const selectedCategory = document.getElementById("categoryFilter").value;
-    localStorage.setItem("selectedCategory", selectedCategory); // Remember the selection
+    localStorage.setItem("selectedCategory", selectedCategory);
   
     let filtered = quotes;
   
@@ -140,7 +140,7 @@ function filterQuotes() {
     }
   
     const quoteDisplay = document.getElementById("quoteDisplay");
-    quoteDisplay.innerHTML = ""; // Clear display
+    quoteDisplay.innerHTML = "";
   
     if (filtered.length === 0) {
       quoteDisplay.innerHTML = "<p>No quotes found for this category.</p>";
@@ -154,5 +154,51 @@ function filterQuotes() {
     });
   }
   populateCategories();
+  function fetchQuotesFromServer() {
+    fetch("https://jsonplaceholder.typicode.com/posts?_limit=3")
+      .then(response => response.json())
+      .then(serverData => {
+      
+        const serverQuotes = serverData.map(post => ({
+          text: post.title,
+          category: "Server"
+        }));
+  
+        handleQuoteConflicts(serverQuotes);
+      })
+      .catch(error => {
+        console.error("Failed to fetch server quotes:", error);
+      });
+  }
+
+  function handleQuoteConflicts(serverQuotes) {
+    let hasConflict = false;
+  
+    serverQuotes.forEach(serverQuote => {
+      const exists = quotes.some(q => q.text === serverQuote.text);
+      if (!exists) {
+        quotes.push(serverQuote);
+        hasConflict = true;
+      }
+    });
+  
+    if (hasConflict) {
+      saveQuotes();
+      populateCategories();
+      filterQuotes();
+      notifyUser("New quotes synced from server. Server data prioritized.");
+    }
+  }
+  function notifyUser(message) {
+  const notification = document.getElementById("notification");
+  notification.textContent = message;
+
+  setTimeout(() => {
+    notification.textContent = "";
+  }, 5000);
+}
+// Fetch every 10 seconds (for demo)
+setInterval(fetchQuotesFromServer, 10000);
+
 
   
